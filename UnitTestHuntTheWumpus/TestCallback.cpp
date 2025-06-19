@@ -27,9 +27,11 @@ namespace TestHuntTheWumpus
         std::stringstream output;
         EventHandler<int> intCallback;
         EventHandler<void> regCallback;
+        regCallback.AddCallback([&]() {output << "I dont care about your number!"; });
+        regCallback.Notify();
         intCallback.AddCallback([&](int value) {output << "Your number is " << value; });
         intCallback.Notify(8);
 
-        CHECK_EQUAL(output.str(), "Your number is 8");
+        CHECK_EQUAL(output.str(), "I dont care about your number!Your number is 8");
 ;    }
 }
