@@ -22,16 +22,34 @@ namespace TestHuntTheWumpus
         CHECK_EQUAL(output.str(), "Main Callback1Main Callback2")
     }
 
-    TEST(CallbackSuite, EventHandlerTest)
+    // show that the event handler can contain any number of callbacks but only triggers the appropriate templated callback
+    TEST(CallbackSuite, EventHandlerTestNoParams)
     {
         std::stringstream output;
-        EventHandler<int> intCallback;
-        EventHandler<void> regCallback;
-        regCallback.AddCallback([&]() {output << "I dont care about your number!"; });
-        regCallback.Notify();
-        intCallback.AddCallback([&](int value) {output << "Your number is " << value; });
+        EventHandler intCallback;
+        // add parameterless, int and string callbacks
+        intCallback.AddCallback([&]() {output << "I dont care about your number!"; });
+        intCallback.AddCallback<int>([&](int value) {output << "Your number is " << value; });
+        intCallback.AddCallback<std::string>([&](std::string value) {output << "my name is " << value; });
+        // ONLY notify int callback
+        intCallback.Notify();
+
+        CHECK_EQUAL(output.str(), "I dont care about your number!");
+    }
+
+    // show that the event handler can contain any number of callbacks but only triggers the appropriate templated callback
+    TEST(CallbackSuite, EventHandlerTestTemplate)
+    {
+        std::stringstream output;
+        EventHandler intCallback;
+        // add parameterless, int and string callbacks
+        intCallback.AddCallback([&]() {output << "I dont care about your number!"; });
+        intCallback.AddCallback<int>([&](int value) {output << "Your number is " << value; });
+        intCallback.AddCallback<std::string>([&](std::string value) {output << "my name is " << value; });
+        // ONLY notify int callback
         intCallback.Notify(8);
 
-        CHECK_EQUAL(output.str(), "I dont care about your number!Your number is 8");
-;    }
+        CHECK_EQUAL(output.str(), "Your number is 8");
+        ;
+    }
 }

@@ -1,39 +1,77 @@
 #include <functional>
 #include <vector>
+#include <map>
+#include <typeinfo>
+#include <memory>
+#include <typeindex>
 
-class IEventHandler
+
+
+struct IFunctionContainer
 {
+
 };
 
 template<typename Args>
-class EventHandler : public IEventHandler
+struct TemplateFunctionContainter : IFunctionContainer
 {
-public:
-	void AddCallback(std::function<void(Args)>&&);
-	void Notify(Args);
-private:
 	std::vector<std::function<void(Args)>> m_callbacks;
 };
 
-template<typename Args>
-void EventHandler<Args>::AddCallback(std::function<void(Args)>&& callback)
+class EventHandler 
 {
-	m_callbacks.emplace_back(callback);
+public:
+	template<typename Args>
+	void AddCallback(std::function<void(Args)>&&);
+	template<typename Args>
+	void Notify(Args);
+	void AddCallback(std::function<void()>&&);
+	void Notify();
+private:
+	std::vector<std::function<void()>> m_callbacks;
+	std::map<std::type_index, IFunctionContainer*> m_templateCallbacks;
+
+	template<typename Args>
+	std::vector<std::function<void(Args)>>& GetTemplatedCallbacks();
+};
+
+template<typename Args>
+void EventHandler::AddCallback(std::function<void(Args)>&& callback)
+{
+	GetTemplatedCallbacks<Args>().emplace_back(callback);
 }
 
 template<typename Args>
-void EventHandler<Args>::Notify(Args arguments)
+void EventHandler::Notify(Args arguments)
 {
-	for (auto callback : m_callbacks)
+	for (auto callback : GetTemplatedCallbacks<Args>())
 	{
 		callback(arguments);
 	}
 }
-template<>
-void EventHandler<void>::Notify()
+
+void EventHandler::AddCallback(std::function<void()>&& callback)
+{
+	m_callbacks.emplace_back(callback);
+}
+
+void EventHandler::Notify()
 {
 	for (auto callback : m_callbacks)
 	{
 		callback();
 	}
+}
+
+// this feels really wrong but I'm unsure how to account for a single event handler object that can handle different arguments 
+template<typename Args>
+std::vector<std::function<void(Args)>>& EventHandler::GetTemplatedCallbacks()
+{
+	std::type_index key = typeid(Args);
+	if (!m_templateCallbacks.contains(key))
+	{
+		m_templateCallbacks.try_emplace(key, new TemplateFunctionContainter<Args>);
+	}
+	TemplateFunctionContainter<Args>* cast = static_cast<TemplateFunctionContainter<Args>*>(m_templateCallbacks.at(key));
+	return cast->m_callbacks;
 }
