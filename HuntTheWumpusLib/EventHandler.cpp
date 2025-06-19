@@ -1,19 +1,16 @@
 #include <functional>
 #include <vector>
 #include "EventHandler.h"
-/*
-template<typename Args>
-void EventHandler<Args>::AddCallback(std::function<void(Args)> callback)
+
+void EventHandler::AddCallback(std::function<void()>&& callback)
 {
-	m_callbacks.insert(callback);
+	m_callbacks.emplace_back(callback);
 }
 
-template<typename Args>
-void EventHandler<Args>::Notify(Args arguments)
+void EventHandler::Notify()
 {
-    for (auto callback : m_callbacks)
-    {
-        callback(arguments);
-    }
+	for (auto callback : m_callbacks)
+	{
+		callback();
+	}
 }
-*/

@@ -1,4 +1,5 @@
 #include "UserNotification.h"
+#include "EventHandler.h"
 
 #include <functional>
 #include <map>
@@ -7,16 +8,20 @@ namespace HuntTheWumpus
 {
     void UserNotification::AddCallback([[maybe_unused]] const Notification category, [[maybe_unused]] std::function<void()>&& callback)
     {
-        m_callbacks.insert({ category, callback });
+        GetEventHandler(category).AddCallback(std::move(callback));
     }
 
-    void UserNotification::Notify(Notification category) const
+    void UserNotification::Notify(Notification category)
     {
-        auto indexer = m_callbacks.equal_range(category);
-        for (auto callback = indexer.first; callback != indexer.second; ++callback)
-        {
-            callback->second();
-        }
+        GetEventHandler(category).Notify();
     }
 
+    EventHandler& UserNotification::GetEventHandler(Notification category)
+    {
+        if (!m_callbacks.contains(category))
+        {
+            m_callbacks.emplace(category, EventHandler());
+        }
+        return m_callbacks.at(category);
+    }
 }

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <functional>
 #include <vector>
 #include <map>
@@ -35,6 +37,20 @@ private:
 	std::vector<std::function<void(Args)>>& GetTemplatedCallbacks();
 };
 
+
+// this feels really wrong but I'm unsure how to account for a single event handler object that can handle different arguments 
+template<typename Args>
+std::vector<std::function<void(Args)>>& EventHandler::GetTemplatedCallbacks()
+{
+	std::type_index key = typeid(Args);
+	if (!m_templateCallbacks.contains(key))
+	{
+		m_templateCallbacks.try_emplace(key, new TemplateFunctionContainter<Args>);
+	}
+	TemplateFunctionContainter<Args>* cast = static_cast<TemplateFunctionContainter<Args>*>(m_templateCallbacks.at(key));
+	return cast->m_callbacks;
+}
+
 template<typename Args>
 void EventHandler::AddCallback(std::function<void(Args)>&& callback)
 {
@@ -48,30 +64,4 @@ void EventHandler::Notify(Args arguments)
 	{
 		callback(arguments);
 	}
-}
-
-void EventHandler::AddCallback(std::function<void()>&& callback)
-{
-	m_callbacks.emplace_back(callback);
-}
-
-void EventHandler::Notify()
-{
-	for (auto callback : m_callbacks)
-	{
-		callback();
-	}
-}
-
-// this feels really wrong but I'm unsure how to account for a single event handler object that can handle different arguments 
-template<typename Args>
-std::vector<std::function<void(Args)>>& EventHandler::GetTemplatedCallbacks()
-{
-	std::type_index key = typeid(Args);
-	if (!m_templateCallbacks.contains(key))
-	{
-		m_templateCallbacks.try_emplace(key, new TemplateFunctionContainter<Args>);
-	}
-	TemplateFunctionContainter<Args>* cast = static_cast<TemplateFunctionContainter<Args>*>(m_templateCallbacks.at(key));
-	return cast->m_callbacks;
 }

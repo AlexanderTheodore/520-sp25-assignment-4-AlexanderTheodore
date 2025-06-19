@@ -376,3 +376,5 @@ output*.bmp
 *.pdf
 /WumpusInformationModel.png
 *.7z
+*.tlog
+x64/Debug/UnitTestHuntTheWumpus.pdb

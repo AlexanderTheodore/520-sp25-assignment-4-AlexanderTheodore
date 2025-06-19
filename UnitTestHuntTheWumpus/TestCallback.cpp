@@ -1,7 +1,6 @@
 #include <TestHarness.h>
 
 #include "UserNotification.h"
-#include "EventHandler.h"
 
 #include "TestHelperTestEnvironment.h"
 
@@ -16,7 +15,7 @@ namespace TestHuntTheWumpus
         observer.AddCallback(HuntTheWumpus::UserNotification::Notification::CaveEntered, [&]() {output << "Main Callback1"; });
         observer.AddCallback(HuntTheWumpus::UserNotification::Notification::CaveEntered, [&]() {output << "Main Callback2"; });
         observer.AddCallback(HuntTheWumpus::UserNotification::Notification::ReportIllegalMove, [&]() {output << "Non main callback, shouldn't be called"; });
-        
+
         observer.Notify(HuntTheWumpus::UserNotification::Notification::CaveEntered);
 
         CHECK_EQUAL(output.str(), "Main Callback1Main Callback2")

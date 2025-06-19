@@ -8,6 +8,7 @@
 #include <iostream>
 #include <random>
 #include <string>
+#include <vector>
 
 namespace
 {
@@ -50,8 +51,12 @@ namespace
     {
         // this is the part I'm less clear on, here the notifications are created in isolation from any gameplay relevant items shouldn't the items subscribe themselves?
         HuntTheWumpus::UserNotification observer;
-        observer.AddCallback(HuntTheWumpus::UserNotification::Notification::CaveEntered, []() {
-            std::cout << "I am in a cave with tunnels";
+        observer.AddCallback<std::vector<int>>(HuntTheWumpus::UserNotification::Notification::ReportNeighboringCaves,[](std::vector<int> connectedids) {
+            std::cout << "I am in a cave with tunnels ";
+            for (auto id : connectedids)
+            {
+                std::cout << id << ",";
+            }
             });
   
         observer.AddCallback(HuntTheWumpus::UserNotification::Notification::ReportIllegalMove, []() {std::cout << "Illegal move detected!"; });

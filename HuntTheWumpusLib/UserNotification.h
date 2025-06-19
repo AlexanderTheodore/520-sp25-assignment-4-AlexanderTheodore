@@ -2,6 +2,7 @@
 
 #include <functional>
 #include <map>
+#include "EventHandler.h"
 
 namespace HuntTheWumpus
 {
@@ -31,11 +32,17 @@ namespace HuntTheWumpus
         UserNotification() = default;
         ~UserNotification() = default;
 
-
         void AddCallback(Notification category, std::function<void()>&& callback);
 
+        template<typename Arg>
+        void AddCallback(Notification category, std::function<void(Arg)>&& callback);
+
+
         // TODO: implement
-        void Notify(Notification category) const;
+        void Notify(Notification category);
+
+        template<typename Arg>
+        void Notify(Notification category, Arg args);
 
         UserNotification(const UserNotification&) = default;
         UserNotification(UserNotification&&) = default;
@@ -44,7 +51,19 @@ namespace HuntTheWumpus
 
         // TODO: hold callbacks.
     private:
-        std::unordered_multimap<Notification, std::function<void()>> m_callbacks;
-
+        std::map<Notification, EventHandler> m_callbacks;
+        EventHandler& GetEventHandler(Notification category);
     };
+
+    template<typename Arg>
+    void UserNotification::AddCallback(Notification category, std::function<void(Arg)>&& callback)
+    {
+        GetEventHandler(category).AddCallback<Arg>(std::move(callback));
+    }
+    template<typename Arg>
+    void UserNotification::Notify(Notification category, Arg args)
+    {
+        GetEventHandler(category).Notify<Arg>(args);
+    }
+
 }
