@@ -15,6 +15,7 @@ namespace HuntTheWumpus
         {
             ObserveWumpus,
             ObservePit,
+            ObserveBat,
             ObserveMiss,
             ObserveOutOfArrows,
             BatTriggered,

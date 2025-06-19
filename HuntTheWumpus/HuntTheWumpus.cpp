@@ -51,15 +51,30 @@ namespace
     {
         // this is the part I'm less clear on, here the notifications are created in isolation from any gameplay relevant items shouldn't the items subscribe themselves?
         HuntTheWumpus::UserNotification observer;
-        observer.AddCallback<std::vector<int>>(HuntTheWumpus::UserNotification::Notification::ReportNeighboringCaves,[](std::vector<int> connectedids) {
-            std::cout << "I am in a cave with tunnels ";
-            for (auto id : connectedids)
+        observer.AddCallback<std::pair<int, std::vector<int>>>(HuntTheWumpus::UserNotification::Notification::ReportNeighboringCaves,[](std::pair<int, std::vector<int>> caveIdPair) {
+            std::cout << "I am in cave " << caveIdPair.first << " with tunnels ";
+            for (auto id : caveIdPair.second)
             {
                 std::cout << id << ",";
             }
+            std::cout << "\n";
             });
-  
-        observer.AddCallback(HuntTheWumpus::UserNotification::Notification::ReportIllegalMove, []() {std::cout << "Illegal move detected!"; });
+        /*
+            CaveEntered, // requires vector<denizens> argument
+            */
+        observer.AddCallback(HuntTheWumpus::UserNotification::Notification::ObserveWumpus, []() {std::cout << "I smell a wumpus!\n"; });
+        observer.AddCallback(HuntTheWumpus::UserNotification::Notification::ObservePit, []() {std::cout << "I feel a draft!\n"; });
+        observer.AddCallback(HuntTheWumpus::UserNotification::Notification::ObserveBat, []() {std::cout << "Bats nearby!\n"; });
+        observer.AddCallback(HuntTheWumpus::UserNotification::Notification::ObserveOutOfArrows, []() {std::cout << "No More Arrows!\n"; });
+        observer.AddCallback(HuntTheWumpus::UserNotification::Notification::BatTriggered, []() {std::cout << "A super bat wisks you away!\n"; });
+        observer.AddCallback(HuntTheWumpus::UserNotification::Notification::PitTriggered, []() {std::cout << "You fall into a pit!\n"; });
+        observer.AddCallback(HuntTheWumpus::UserNotification::Notification::HunterEaten, []() {std::cout << "The Wumpus Eats You!\n"; });
+        observer.AddCallback(HuntTheWumpus::UserNotification::Notification::HunterShot, []() {std::cout << "Shot by your own arrow!\n"; });
+        observer.AddCallback(HuntTheWumpus::UserNotification::Notification::WumpusShot, []() {std::cout << "Wumpus Down!\n"; });
+        observer.AddCallback(HuntTheWumpus::UserNotification::Notification::WumpusTriggered, []() {std::cout << "Wumpus moves(?)!\n"; });
+        observer.AddCallback(HuntTheWumpus::UserNotification::Notification::WumpusAwoken, []() {std::cout << "The wumpus wakes in response to the arrow!\n"; });
+        observer.AddCallback<int>(HuntTheWumpus::UserNotification::Notification::ReportIllegalMove, [](int invalidId) {std::cout << "I can't move to cave" << invalidId << "\n";});
+
         return observer;
     }
 

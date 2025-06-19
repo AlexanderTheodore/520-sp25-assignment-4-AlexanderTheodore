@@ -2,6 +2,7 @@
 
 #include "Context.h"
 #include "GameStateObservation.h"
+#include "UserNotification.h"
 
 namespace HuntTheWumpus
 {
@@ -17,6 +18,7 @@ namespace HuntTheWumpus
     {
         if (trigger->Properties().m_isEdible)
         {
+            m_providers.m_notification.Notify(UserNotification::Notification::PitTriggered);
             m_providers.m_change.GameOver(false);
 
             return true;

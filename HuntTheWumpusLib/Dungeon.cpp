@@ -169,7 +169,7 @@ namespace HuntTheWumpus
             }
             else
             {
-                m_providers.m_notification.Notify(HuntTheWumpus::UserNotification::Notification::ReportIllegalMove);
+                m_providers.m_notification.Notify<int>(HuntTheWumpus::UserNotification::Notification::ReportIllegalMove, destinationIds.front());
             }
         }
 
@@ -208,12 +208,14 @@ namespace HuntTheWumpus
 
             if (m_providers.m_change.IsPlaying())
             {
+                m_providers.m_notification.Notify(UserNotification::Notification::WumpusAwoken);
                 MoveDenizenRandomly(m_caveDenizens.at({ Category::Wumpus, 0 }));
             }
 
             // The wumpus move could have ended the game, so check again.
             if (m_providers.m_change.IsPlaying() && hunter->OutOfArrows())
             {
+                m_providers.m_notification.Notify(UserNotification::Notification::ObserveOutOfArrows);
                 m_providers.m_change.GameOver(false);
             }
         }

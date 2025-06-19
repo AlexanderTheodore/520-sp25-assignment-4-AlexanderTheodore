@@ -4,6 +4,7 @@
 #include "Context.h"
 #include "Dungeon.h"
 #include "RandomProvider.h"
+#include "UserNotification.h"
 
 namespace HuntTheWumpus
 {
@@ -19,6 +20,7 @@ namespace HuntTheWumpus
     {
         if (trigger->Properties().m_carryableByBats)
         {
+            m_providers.m_notification.Notify(UserNotification::Notification::BatTriggered);
             const auto cave = m_cave.lock();
 
             // Carry to another spot.
@@ -32,7 +34,6 @@ namespace HuntTheWumpus
                 newCaveId = m_providers.m_random.MakeRandomCave();
                 newCaveFound = newCaveId != caveId;
             }
-
             cave->GetDungeon().Move(trigger->GetIdentifier(), newCaveId);
             return true;
         }
