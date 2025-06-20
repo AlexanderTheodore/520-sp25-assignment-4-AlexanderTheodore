@@ -120,11 +120,14 @@ namespace TestHuntTheWumpus
 
         std::shared_ptr<HuntTheWumpus::Hunter> hunter = std::make_shared<HuntTheWumpus::Hunter>(env.m_context);
 
-        env.m_userNotifier.AddCallback<std::pair<int, std::vector<int>>>(HuntTheWumpus::UserNotification::Notification::ReportNeighboringCaves, [&enteredId, &neighboringIds](const std::pair<int, std::vector<int>>& args) {
-            enteredId = args.first;
-            neighboringIds = args.second;
-            }
-        );
+        env.m_userNotifier.AddCallback<int>(HuntTheWumpus::UserNotification::Notification::CaveEntered, [&enteredId](const int& args)
+        {
+            enteredId = args;
+        });
+        env.m_userNotifier.AddCallback<std::vector<int>>(HuntTheWumpus::UserNotification::Notification::ReportNeighboringCaves, [&neighboringIds](const std::vector<int>& connectedIds)
+        {
+            neighboringIds = connectedIds;
+        });
 
         hunter->EnterCave(cave);
         cave->AddDenizen(hunter, true);

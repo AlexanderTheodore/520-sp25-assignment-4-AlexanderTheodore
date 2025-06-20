@@ -1,10 +1,13 @@
 #include <TestHarness.h>
 
 #include "UserNotification.h"
+#include "EventHandler.h"
 
 #include "TestHelperTestEnvironment.h"
 
 #include <sstream>
+#include <variant>
+#include <cassert>
 
 namespace TestHuntTheWumpus
 {
@@ -25,11 +28,10 @@ namespace TestHuntTheWumpus
     TEST(CallbackSuite, EventHandlerTestNoParams)
     {
         std::stringstream output;
-        EventHandler intCallback;
+        Eventhandler intCallback;
         // add parameterless, int and string callbacks
         intCallback.AddCallback([&]() {output << "I dont care about your number!"; });
-        intCallback.AddCallback<int>([&](int value) {output << "Your number is " << value; });
-        intCallback.AddCallback<std::string>([&](std::string value) {output << "my name is " << value; });
+        intCallback.AddCallback([&](int value) {output << "Your number is " << value; });
         // ONLY notify int callback
         intCallback.Notify();
 
@@ -40,15 +42,13 @@ namespace TestHuntTheWumpus
     TEST(CallbackSuite, EventHandlerTestTemplate)
     {
         std::stringstream output;
-        EventHandler intCallback;
+        Eventhandler intCallback;
         // add parameterless, int and string callbacks
         intCallback.AddCallback([&]() {output << "I dont care about your number!"; });
-        intCallback.AddCallback<int>([&](int value) {output << "Your number is " << value; });
-        intCallback.AddCallback<std::string>([&](std::string value) {output << "my name is " << value; });
+        intCallback.AddCallback([&](int value) {output << "Your number is " << value; });
         // ONLY notify int callback
         intCallback.Notify(8);
 
         CHECK_EQUAL(output.str(), "Your number is 8");
-        ;
     }
 }

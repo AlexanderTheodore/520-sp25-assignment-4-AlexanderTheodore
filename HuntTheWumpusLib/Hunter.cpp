@@ -43,7 +43,8 @@ namespace HuntTheWumpus
             m_providers.m_change.GameOver(false);
             return true;
         }
-        m_providers.m_notification.Notify<std::pair<int, std::vector<int>>>(HuntTheWumpus::UserNotification::Notification::ReportNeighboringCaves, {GetCurrentCave().lock()->GetCaveId(), GetCurrentCave().lock()->GetConnectedIds() });
+        m_providers.m_notification.Notify<int>(HuntTheWumpus::UserNotification::Notification::CaveEntered, GetCurrentCave().lock()->GetCaveId());
+        m_providers.m_notification.Notify<std::vector<int>>(HuntTheWumpus::UserNotification::Notification::ReportNeighboringCaves, GetCurrentCave().lock()->GetConnectedIds());
         GetCurrentCave().lock()->ReportAdjacentDenizens();
         return false;
     }

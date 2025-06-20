@@ -3,6 +3,8 @@
 #include <functional>
 #include <map>
 #include "EventHandler.h"
+#include <variant>
+#include <utility>
 
 namespace HuntTheWumpus
 {
@@ -52,14 +54,14 @@ namespace HuntTheWumpus
 
         // TODO: hold callbacks.
     private:
-        std::map<Notification, EventHandler> m_callbacks;
-        EventHandler& GetEventHandler(Notification category);
+        std::map < Notification, Eventhandler> m_callbacks;
+        Eventhandler& GetEventHandler(Notification category);
     };
 
     template<typename Arg>
     void UserNotification::AddCallback(Notification category, std::function<void(Arg)>&& callback)
     {
-        GetEventHandler(category).AddCallback<Arg>(std::move(callback));
+        GetEventHandler(category).AddCallback(std::move(callback));
     }
     template<typename Arg>
     void UserNotification::Notify(Notification category, Arg args)

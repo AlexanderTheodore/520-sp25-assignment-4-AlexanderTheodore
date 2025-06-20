@@ -16,11 +16,11 @@ namespace HuntTheWumpus
         GetEventHandler(category).Notify();
     }
 
-    EventHandler& UserNotification::GetEventHandler(Notification category)
+    Eventhandler& UserNotification::GetEventHandler(Notification category)
     {
         if (!m_callbacks.contains(category))
         {
-            m_callbacks.emplace(category, EventHandler());
+            m_callbacks.emplace(category, Eventhandler());
         }
         return m_callbacks.at(category);
     }

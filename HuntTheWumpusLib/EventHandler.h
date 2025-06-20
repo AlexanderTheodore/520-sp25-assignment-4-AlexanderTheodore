@@ -4,64 +4,78 @@
 #include <vector>
 #include <map>
 #include <typeinfo>
-#include <memory>
-#include <typeindex>
+#include <variant>
 
-
-
-struct IFunctionContainer
-{
-
-};
-
-template<typename Args>
-struct TemplateFunctionContainter : IFunctionContainer
-{
-	std::vector<std::function<void(Args)>> m_callbacks;
-};
-
-class EventHandler 
+// can accept any function variant and allows for casting to specific argument types or no arguments at all in a single container
+template<typename VariantType>
+class EventHandlerVariant
 {
 public:
-	template<typename Args>
-	void AddCallback(std::function<void(Args)>&&);
-	template<typename Args>
-	void Notify(Args);
-	void AddCallback(std::function<void()>&&);
-	void Notify();
-private:
-	std::vector<std::function<void()>> m_callbacks;
-	std::map<std::type_index, IFunctionContainer*> m_templateCallbacks;
+    // notifies all contained functions with no arguments
+    void Notify();
+    // notifies all contained functions with a templated argument
+    template<typename Args>
+    void Notify(const Args& argument);
+    // adds a callback function that matches one of the types within variant type
+    void AddCallback(VariantType&& newFunc);
 
-	template<typename Args>
-	std::vector<std::function<void(Args)>>& GetTemplatedCallbacks();
+private:
+    // helper function that casts a variant container to a specific function without arugment and calls it
+    void CastFunction(const VariantType& func);
+    // helper function that casts a variant container to a specific function with an arugment and calls it
+    template<typename functionType>
+    void CastFunction(const VariantType& func, const functionType& arg);
+    // contains all variant function containers
+    std::vector<VariantType> m_list;
 };
 
-
-// this feels really wrong but I'm unsure how to account for a single event handler object that can handle different arguments 
-template<typename Args>
-std::vector<std::function<void(Args)>>& EventHandler::GetTemplatedCallbacks()
+// defines all valid function variants this event handler will accept
+class Eventhandler : public EventHandlerVariant< std::variant < std::function<void()>, std::function<void(int)>, std::function<void(std::vector<int>)>>>
 {
-	std::type_index key = typeid(Args);
-	if (!m_templateCallbacks.contains(key))
-	{
-		m_templateCallbacks.try_emplace(key, new TemplateFunctionContainter<Args>);
-	}
-	TemplateFunctionContainter<Args>* cast = static_cast<TemplateFunctionContainter<Args>*>(m_templateCallbacks.at(key));
-	return cast->m_callbacks;
+};
+
+template<typename VariantType>
+void EventHandlerVariant<VariantType>::Notify()
+{
+    for (const auto& listeners : m_list)
+    {
+        CastFunction(listeners);
+    }
 }
 
-template<typename Args>
-void EventHandler::AddCallback(std::function<void(Args)>&& callback)
+template<typename VariantType>
+void EventHandlerVariant<VariantType>::AddCallback(VariantType&& newFunc)
 {
-	GetTemplatedCallbacks<Args>().emplace_back(callback);
+    m_list.emplace_back(newFunc);
 }
 
-template<typename Args>
-void EventHandler::Notify(Args arguments)
+template<typename VariantType>
+void EventHandlerVariant<VariantType>::CastFunction(const VariantType& func)
 {
-	for (const auto &callback : GetTemplatedCallbacks<Args>())
-	{
-		callback(arguments);
-	}
+    auto* cast = std::get_if<std::function<void()>>(&func);
+    if (cast)
+    {
+        (*cast)();
+    }
+}
+
+template<typename VariantType>
+template<typename Args>
+void EventHandlerVariant<VariantType>::Notify(const Args& argument)
+{
+    for (const auto& listeners : m_list)
+    {
+        CastFunction<Args>(listeners, argument);
+    }
+}
+
+template<typename VariantType>
+template<typename functionType>
+void EventHandlerVariant<VariantType>::CastFunction(const VariantType& func, const functionType& arg)
+{
+    auto* cast = std::get_if<std::function<void(functionType)>>(&func);
+    if (cast)
+    {
+        (*cast)(arg);
+    }
 }
