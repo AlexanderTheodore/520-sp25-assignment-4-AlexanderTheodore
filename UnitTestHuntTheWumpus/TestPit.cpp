@@ -37,11 +37,16 @@ namespace TestHuntTheWumpus
 
         const auto hunter = std::make_shared<HuntTheWumpus::Hunter>(env.m_context);
 
+        bool callbackTriggered;
+        env.m_userNotifier.AddCallback(HuntTheWumpus::UserNotification::Notification::PitTriggered, [&callbackTriggered]() {callbackTriggered = true; });
+
+
         // This should return true that there was an action taken.
         CHECK(pit.ObserveCaveEntrance(hunter));
 
         // Show that a state-change happened to a "lost" result.
         CHECK(env.m_state.m_gameOverCalled);
         CHECK(!env.m_state.m_gameOverResult);
+        CHECK(callbackTriggered)
     }
 }

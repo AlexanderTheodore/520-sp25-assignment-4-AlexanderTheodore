@@ -38,6 +38,10 @@ namespace TestHuntTheWumpus
 
         HuntTheWumpus::Wumpus wumpus(0, env.m_context);
 
+        bool callbackTriggered;
+        env.m_userNotifier.AddCallback(HuntTheWumpus::UserNotification::Notification::WumpusShot, [&callbackTriggered]() {callbackTriggered = true; });
+
+
         const auto arrow = std::make_shared<HuntTheWumpus::Arrow>(0, env.m_context);
 
         // This should return true that there was an action taken.
@@ -46,6 +50,7 @@ namespace TestHuntTheWumpus
         // Show that a state-change happened to a "won" result.
         CHECK(env.m_state.m_gameOverCalled);
         CHECK(env.m_state.m_gameOverResult);
+        CHECK(callbackTriggered);
     }
 
     TEST(WumpusSuite, Wumpus_EatsHunter)
@@ -53,6 +58,9 @@ namespace TestHuntTheWumpus
         TestEnvironment env;
 
         HuntTheWumpus::Wumpus wumpus(0, env.m_context);
+
+        bool callbackTriggered;
+        env.m_userNotifier.AddCallback(HuntTheWumpus::UserNotification::Notification::HunterEaten, [&callbackTriggered]() {callbackTriggered = true; });
 
         const auto hunter = std::make_shared<HuntTheWumpus::Hunter>(env.m_context);
 
@@ -65,6 +73,7 @@ namespace TestHuntTheWumpus
         // Show that a state-change happened to a "lost" result.
         CHECK(env.m_state.m_gameOverCalled);
         CHECK(!env.m_state.m_gameOverResult);
+        CHECK(callbackTriggered);
     }
 
     TEST(WumpusSuite, Wumpus_FleesHunter)
@@ -80,6 +89,10 @@ namespace TestHuntTheWumpus
 
         const auto hunter = std::make_shared<HuntTheWumpus::Hunter>(env.m_context);
 
+
+        bool callbackTriggered;
+        env.m_userNotifier.AddCallback(HuntTheWumpus::UserNotification::Notification::WumpusTriggered, [&callbackTriggered]() {callbackTriggered = true; });
+
         // Set the probability to be eaten.
         env.m_provider.m_desiredRandomNumber = 0.5f;
 
@@ -90,6 +103,7 @@ namespace TestHuntTheWumpus
         CHECK(env.m_dungeon.m_moveDenizenRandomlyTriggered);
         CHECK_EQUAL(expectedMover, env.m_dungeon.m_thingToMove);
         CHECK(!env.m_state.m_gameOverCalled);
+        CHECK(callbackTriggered);
     }
 
     TEST(WumpusSuite, Wumpus_IgnoresBat)

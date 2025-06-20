@@ -62,7 +62,7 @@ namespace
         /*
             CaveEntered, // requires vector<denizens> argument
             */
-        observer.AddCallback(HuntTheWumpus::UserNotification::Notification::ObserveWumpus, []() {std::cout << "I smell a wumpus!\n"; });
+        observer.AddCallback(HuntTheWumpus::UserNotification::Notification::ObserveWumpus, []() {std::cout << "I smell a Wumpus!\n"; });
         observer.AddCallback(HuntTheWumpus::UserNotification::Notification::ObservePit, []() {std::cout << "I feel a draft!\n"; });
         observer.AddCallback(HuntTheWumpus::UserNotification::Notification::ObserveBat, []() {std::cout << "Bats nearby!\n"; });
         observer.AddCallback(HuntTheWumpus::UserNotification::Notification::ObserveOutOfArrows, []() {std::cout << "No More Arrows!\n"; });
@@ -71,9 +71,9 @@ namespace
         observer.AddCallback(HuntTheWumpus::UserNotification::Notification::HunterEaten, []() {std::cout << "The Wumpus Eats You!\n"; });
         observer.AddCallback(HuntTheWumpus::UserNotification::Notification::HunterShot, []() {std::cout << "Shot by your own arrow!\n"; });
         observer.AddCallback(HuntTheWumpus::UserNotification::Notification::WumpusShot, []() {std::cout << "Wumpus Down!\n"; });
-        observer.AddCallback(HuntTheWumpus::UserNotification::Notification::WumpusTriggered, []() {std::cout << "Wumpus moves(?)!\n"; });
-        observer.AddCallback(HuntTheWumpus::UserNotification::Notification::WumpusAwoken, []() {std::cout << "The wumpus wakes in response to the arrow!\n"; });
-        observer.AddCallback<int>(HuntTheWumpus::UserNotification::Notification::ReportIllegalMove, [](int invalidId) {std::cout << "I can't move to cave" << invalidId << "\n";});
+        observer.AddCallback(HuntTheWumpus::UserNotification::Notification::WumpusTriggered, []() {std::cout << "You bump into the Wumpus!\n"; });
+        observer.AddCallback(HuntTheWumpus::UserNotification::Notification::WumpusAwoken, []() {std::cout << "The Wumpus wakes in response to the arrow!\n"; });
+        observer.AddCallback<int>(HuntTheWumpus::UserNotification::Notification::ReportIllegalMove, [](int invalidId) {std::cout << "I can't move to cave " << invalidId << "\n";});
 
         return observer;
     }

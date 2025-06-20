@@ -4,6 +4,9 @@
 
 #include "TestHelperTestEnvironment.h"
 
+#include "UserNotification.h"
+#include <sstream>
+
 namespace TestHuntTheWumpus
 {
     TEST(ArrowSuite, Arrow_HasProperAttributes)

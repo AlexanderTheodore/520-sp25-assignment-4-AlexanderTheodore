@@ -65,6 +65,24 @@ namespace TestHuntTheWumpus
         CHECK(cave->HasDenizen({ HuntTheWumpus::Category::Hunter, 0 }));
     }
 
+
+    TEST(DungeonSuite, Dungeon_MoveRequest_IllegalMoveDetected)
+    {
+        TestEnvironment env;
+
+        // This will ask for 6 random cave ids.
+        env.m_provider.SetCaveSequence({ 1, 2, 3, 4, 5, 6 });
+
+        HuntTheWumpus::Dungeon dungeon(env.m_context);
+
+        bool illegalmoveId;
+        env.m_userNotifier.AddCallback<int>(HuntTheWumpus::UserNotification::Notification::ReportIllegalMove, [&illegalmoveId](int id) {illegalmoveId = id; });
+        // We know the Hunter is in cave 6, which connects to 15.
+        dungeon.MakeMove(HuntTheWumpus::DungeonMove::Move, { 1 });
+
+        CHECK_EQUAL(illegalmoveId, 1);
+    }
+
     TEST(DungeonSuite, Dungeon_ShootRequest_MissingTheWumpusReportsMiss)
     {
         TestEnvironment env;
@@ -73,6 +91,10 @@ namespace TestHuntTheWumpus
         env.m_provider.SetCaveSequence({ 1, 2, 3, 4, 5, 6 });
 
         HuntTheWumpus::Dungeon dungeon(env.m_context);
+
+        // subscribe to wumpus being awoken by shot
+        bool callbackTriggered;
+        env.m_userNotifier.AddCallback(HuntTheWumpus::UserNotification::Notification::WumpusAwoken, [&callbackTriggered]() {callbackTriggered = true; });
 
         // Make sure the game is playing.
         env.m_state.m_isPlayingResult = true;
@@ -96,11 +118,16 @@ namespace TestHuntTheWumpus
         const auto cave = dungeon.FindCave(newCaveId);
 
         CHECK(cave->HasDenizen({ HuntTheWumpus::Category::Wumpus , 0 }));
+        CHECK(callbackTriggered);
     }
 
     TEST(DungeonSuite, Dungeon_ShootingAll_GameOver)
     {
         TestEnvironment env;
+
+        // add callback to ensure its being triggered
+        bool callbackTriggered;
+        env.m_userNotifier.AddCallback(HuntTheWumpus::UserNotification::Notification::ObserveOutOfArrows, [&callbackTriggered]() {callbackTriggered = true; });
 
         // This will ask for 6 random cave ids.
         env.m_provider.SetCaveSequence({ 1, 2, 3, 4, 5, 6 });
@@ -122,6 +149,7 @@ namespace TestHuntTheWumpus
         dungeon.MakeMove(HuntTheWumpus::DungeonMove::Shoot, { 16 });
         CHECK(env.m_state.m_gameOverCalled);
         CHECK(!env.m_state.m_gameOverResult);
+        CHECK(callbackTriggered);
     }
 
     TEST(DungeonSuite, Dungeon_ShootRequest_HittingTheWumpusReportsGameOver)
@@ -134,6 +162,9 @@ namespace TestHuntTheWumpus
 
         HuntTheWumpus::Dungeon dungeon(env.m_context);
 
+        bool callbackTriggered;
+        env.m_userNotifier.AddCallback(HuntTheWumpus::UserNotification::Notification::WumpusTriggered, [&callbackTriggered]() {callbackTriggered = true; });
+
         // Make sure the game is playing.
         env.m_state.m_isPlayingResult = true;
 
@@ -145,5 +176,7 @@ namespace TestHuntTheWumpus
         CHECK(!env.m_state.m_isPlayingResult);
         CHECK(env.m_state.m_gameOverCalled);
         CHECK(env.m_state.m_gameOverResult);
+        CHECK(callbackTriggered);
     }
+
 }

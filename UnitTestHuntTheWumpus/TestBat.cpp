@@ -37,6 +37,9 @@ namespace TestHuntTheWumpus
 
         HuntTheWumpus::Bat bat(0, env.m_context);
 
+        bool callbackTriggered;
+        env.m_userNotifier.AddCallback(HuntTheWumpus::UserNotification::Notification::BatTriggered, [&callbackTriggered]() {callbackTriggered = true; });
+
         // The bat must be in a cave for this to work.
         const auto cave = std::make_shared<HuntTheWumpus::Cave>(58, env.m_dungeon);
 
@@ -52,6 +55,7 @@ namespace TestHuntTheWumpus
         // Show that we get the desired random cave.
         CHECK_EQUAL( 57, env.m_dungeon.m_requestedDestination );
         CHECK_EQUAL( HuntTheWumpus::Category::Hunter, env.m_dungeon.m_thingToMove.m_category);
+        CHECK(callbackTriggered);
     }
 
     TEST(BatSuite, Bat_IgnoresWumpus)
