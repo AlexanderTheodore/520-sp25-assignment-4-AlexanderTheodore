@@ -14,9 +14,13 @@ namespace HuntTheWumpus
 
         [[nodiscard]] int GetPriority() const override { return 5; }
 
+        void ReportPresence() override;
+
         Bat(const Bat &) = delete;
         Bat(Bat &&) = delete;
         Bat &operator=(const Bat &) = delete;
         Bat &operator=(Bat &&) = delete;
+
+
     };
 }

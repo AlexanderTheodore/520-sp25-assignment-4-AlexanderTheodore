@@ -54,6 +54,7 @@ namespace HuntTheWumpus
         [[nodiscard]] const DenizenProperties &Properties() const { return m_properties; }
 
         virtual void EnterCave(const std::shared_ptr<Cave>& cave);
+        virtual void ReportPresence();
         void RemoveFromCave();
 
         [[nodiscard]] const std::weak_ptr<Cave> &GetCurrentCave() const { return m_cave; }

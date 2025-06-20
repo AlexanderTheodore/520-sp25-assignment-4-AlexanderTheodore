@@ -14,6 +14,8 @@ namespace HuntTheWumpus
 
         bool ObserveCaveEntrance(const std::shared_ptr<Denizen>& trigger) override;
 
+        void ReportPresence() override;
+
         Pit(const Pit&) = delete;
         Pit(Pit&&) = delete;
         Pit& operator=(const Pit&) = delete;

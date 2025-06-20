@@ -51,4 +51,9 @@ namespace HuntTheWumpus
 
         return false;
     }
+
+    void Wumpus::ReportPresence()
+    {
+        m_providers.m_notification.Notify(UserNotification::Notification::ObserveWumpus);
+    }
 }

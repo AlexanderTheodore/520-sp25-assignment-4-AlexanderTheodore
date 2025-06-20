@@ -31,6 +31,5 @@ namespace HuntTheWumpus
 
     private:
         std::vector<std::shared_ptr<Arrow>> m_arrows;
-        void RaiseWarning();
     };
 }

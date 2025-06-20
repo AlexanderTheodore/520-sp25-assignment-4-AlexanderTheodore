@@ -9,7 +9,7 @@ void EventHandler::AddCallback(std::function<void()>&& callback)
 
 void EventHandler::Notify()
 {
-	for (auto callback : m_callbacks)
+	for (const auto& callback : m_callbacks)
 	{
 		callback();
 	}

@@ -38,6 +38,8 @@ namespace HuntTheWumpus
 
         [[nodiscard]] IDungeon& GetDungeon() const { return m_dungeon; }
 
+        void ReportAdjacentDenizens();
+
         Cave() = delete;
         Cave(const Cave&) = delete;
         Cave(Cave&&) = delete;
@@ -45,6 +47,7 @@ namespace HuntTheWumpus
         Cave& operator=(Cave&&) = delete;
 
     private:
+        void ReportDenizens();
         int m_caveId;
         IDungeon &m_dungeon;
 

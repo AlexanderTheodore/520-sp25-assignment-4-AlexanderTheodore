@@ -26,4 +26,9 @@ namespace HuntTheWumpus
 
         return false;
     }
+
+    void Pit::ReportPresence()
+    {
+        m_providers.m_notification.Notify(UserNotification::Notification::ObservePit);
+    }
 }

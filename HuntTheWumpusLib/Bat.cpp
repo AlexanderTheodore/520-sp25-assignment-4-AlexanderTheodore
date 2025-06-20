@@ -40,4 +40,9 @@ namespace HuntTheWumpus
 
         return false;
     }
+
+    void Bat::ReportPresence()
+    {
+        m_providers.m_notification.Notify(UserNotification::Notification::ObserveBat);
+    }
 }

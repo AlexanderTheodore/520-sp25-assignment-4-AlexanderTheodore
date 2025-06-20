@@ -51,7 +51,7 @@ namespace
     {
         // this is the part I'm less clear on, here the notifications are created in isolation from any gameplay relevant items shouldn't the items subscribe themselves?
         HuntTheWumpus::UserNotification observer;
-        observer.AddCallback<std::pair<int, std::vector<int>>>(HuntTheWumpus::UserNotification::Notification::ReportNeighboringCaves,[](std::pair<int, std::vector<int>> caveIdPair) {
+        observer.AddCallback<std::pair<int, std::vector<int>>>(HuntTheWumpus::UserNotification::Notification::ReportNeighboringCaves,[](const std::pair<int, std::vector<int>>& caveIdPair) {
             std::cout << "I am in cave " << caveIdPair.first << " with tunnels ";
             for (auto id : caveIdPair.second)
             {

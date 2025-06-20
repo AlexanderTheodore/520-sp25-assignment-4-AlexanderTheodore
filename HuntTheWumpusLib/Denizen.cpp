@@ -51,6 +51,10 @@ namespace HuntTheWumpus
         m_cave = cave;
     }
 
+    void Denizen::ReportPresence()
+    {
+    }
+
     void Denizen::RemoveFromCave()
     {
         m_cave.reset();

@@ -70,4 +70,20 @@ namespace HuntTheWumpus
             return denizen->GetIdentifier().m_category == identifier.m_category;
         }) != m_denizens.end();
     }
+
+    void Cave::ReportAdjacentDenizens()
+    {
+        for (const auto& adjacentCave : m_tunnels | std::views::values)
+        {
+            adjacentCave.lock()->ReportDenizens();
+        }
+    }
+
+    void Cave::ReportDenizens() 
+    {
+        for (auto&& denizen : m_denizens) 
+        { 
+            denizen->ReportPresence(); 
+        }
+    }
 }

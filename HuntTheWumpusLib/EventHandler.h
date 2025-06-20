@@ -60,7 +60,7 @@ void EventHandler::AddCallback(std::function<void(Args)>&& callback)
 template<typename Args>
 void EventHandler::Notify(Args arguments)
 {
-	for (auto callback : GetTemplatedCallbacks<Args>())
+	for (const auto &callback : GetTemplatedCallbacks<Args>())
 	{
 		callback(arguments);
 	}
